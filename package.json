@@ -1,0 +1,20 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "node-gyp rebuild",
+    "clean": "node-gyp clean"
+  },
+  "keywords": [],
+  "author": "",
+  "gypfile": true,
+  "license": "ISC",
+  "devDependencies": {
+    "node-gyp": "^9.4.0"
+  },
+  "dependencies": {
+    "node-addon-api": "^6.1.0"
+  }
+}
