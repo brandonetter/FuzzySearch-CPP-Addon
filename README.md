@@ -44,7 +44,7 @@ fuzz = 0.7; // higher value removes less likely matches
 search = 'ne jerksy';
 fuzzyResults = fuzzySearch(search, states,fuzz);
 // ['New Jersey']
-
+```
 
 ![image](https://github.com/brandonetter/FuzzySearch-CPP-Addon/assets/4108484/9c7558ad-2ea3-46e1-999c-c8728e8425a6)
 Performs 10x faster than Javascript version
