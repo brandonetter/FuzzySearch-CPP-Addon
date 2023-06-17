@@ -27,7 +27,7 @@ let search = 'lamaba';
 /*
 searchTerm : string, The word to match with each element of the array
 searchArray : string[], The array to search through
-threshold : float, value between 0 and 1. 0 matches nothing. 1 matches only the exact string
+threshold : float, value between 0 and 1. 0 matches everything. 1 matches only the exact string
 
 result : string[], Results that meet the threshold, returned in order of best match -> worst match
 */
