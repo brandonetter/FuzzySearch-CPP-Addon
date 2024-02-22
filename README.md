@@ -2,15 +2,28 @@
 
 Node package written as an addon in CPP. Uses JaroWinkler to fuzzySearch an array.
 
+Webpack (Vite, Vue, NextJS) Compatibility requires a loader.
+
+```js
+// next config
+const nextConfig = {
+  // configure loader for jwfsearch
+  webpack: (config) => {
+    config.externals = [...config.externals, { jwfsearch: 'jwfsearch' }];
+    return config;
+  },
+};
+```
+
 ```
 npm i jwfsearch
 ```
 
-```
+```js
 const fuzzySearch = require('jwfsearch');
 
 let states = [
-    'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 
+    'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
     'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho',
     'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
     'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
