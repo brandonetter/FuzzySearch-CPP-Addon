@@ -66,6 +66,65 @@ vector<string> jaroWinklerDistance(const std::string& a, const vector<string>& a
     return result;
 }
 
+// Define a custom type for clarity and ease of use
+typedef std::pair<double, std::string> DistanceAndString;
+
+// The new function
+std::vector<std::string> objectJaroWinklerSearch(
+    const std::string& targetString,
+    const std::map<std::string, std::string> &dataObject,
+    const std::vector<std::string>& keys,
+    const double threshold)
+{
+    std::vector<DistanceAndString> distances;
+
+    // Iterate over keys of interest within the object
+    for (const auto& key : keys) {
+        // Ensure the key exists
+        if (dataObject.find(key) != dataObject.end()) {
+            const std::string& value = dataObject.at(key);
+
+            // Calculate Jaro-winkler distance
+            const double distance = jaroWinklerDistance(targetString, value);
+
+            if (distance >= threshold) {
+                distances.push_back(std::make_pair(distance, value));
+            }
+        }
+    }
+
+    // Sort results (descending order based on distance)
+    std::sort(distances.begin(), distances.end(), std::greater<DistanceAndString>());
+
+    // Extract just the strings
+    std::vector<std::string> result;
+    for (const auto& distanceAndValue : distances) {
+        result.push_back(distanceAndValue.second);
+    }
+
+    return result;
+}
+// the same as JarowinklerDistanceMethod but for objectJaroWinklerSearch
+Napi::Array JaroWinklerDistanceObjectMethod(const Napi::CallbackInfo& info){
+    Napi::Env env = info.Env();
+    Napi::String a = info[0].As<Napi::String>();
+    Napi::Object obj = info[1].As<Napi::Object>();
+    Napi::Array keys = info[2].As<Napi::Array>();
+    Napi::Number threshold = info[3].As<Napi::Number>();
+    std::map<std::string, std::string> cppObj;
+    for (int i = 0; i < keys.Length(); i++) {
+        std::string key = keys.Get(i).As<Napi::String>();
+        cppObj[key] = obj.Get(key).As<Napi::String>();
+    }
+    vector<string> result = objectJaroWinklerSearch(a, cppObj, keys, threshold);
+
+    Napi::Array returnArr = Napi::Array::New(env, result.size());
+    for (int i = 0; i < result.size(); i++) {
+        returnArr.Set(i, result[i]);
+    }
+    return returnArr;
+}
+
 Napi::Array JaroWinklerDistanceMethod(const Napi::CallbackInfo& info){
     Napi::Env env = info.Env();
     Napi::String a = info[0].As<Napi::String>();
@@ -88,8 +147,12 @@ Napi::Array JaroWinklerDistanceMethod(const Napi::CallbackInfo& info){
 
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  exports.Set(Napi::String::New(env, "fuzzySearch"),
-              Napi::Function::New(env, JaroWinklerDistanceMethod));
-    return exports;
+  exports.Set(Napi::String::New(env, "jaroWinklerDistance"),
+       Napi::Function::New(env, JaroWinklerDistanceObjectMethod)); // Named Export 1
+
+  exports.Set(Napi::String::New(env, "objectJaroWinklerSearch"),
+           Napi::Function::New(env, ObjectJaroWinklerSearchMethod)); // Named Export 2
+
+  return exports;
 }
 NODE_API_MODULE(testaddon, Init)
