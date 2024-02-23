@@ -1,7 +1,7 @@
 declare module 'jwfsearch' {
-  export default function array(
+  export function array(
     query: string,
-    documents: any[],
+    array: any[],
     fuzz: number
   ): Promise<{
     results: any[];
@@ -16,4 +16,3 @@ declare module 'jwfsearch' {
     results: any[];
   }>;
 }
-//yes
