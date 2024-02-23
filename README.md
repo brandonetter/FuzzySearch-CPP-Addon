@@ -45,18 +45,47 @@ threshold : float, value between 0 and 1. 0 matches everything. 1 matches only t
 result : string[], Results that meet the threshold, returned in order of best match -> worst match
 */
 
-let fuzzyResults = fuzzySearch(search, states, fuzz);
+let fuzzyResults = fuzzySearch.array(search, states, fuzz);
 // ['Alabama']
 
 fuzz = 0.65;
 search = 'ne jerksy';
-fuzzyResults = fuzzySearch(search, states,fuzz);
+fuzzyResults = fuzzySearch.array(search, states,fuzz);
 // ['New Jersey','New York']
 
 fuzz = 0.7; // higher value removes less likely matches
 search = 'ne jerksy';
-fuzzyResults = fuzzySearch(search, states,fuzz);
+fuzzyResults = fuzzySearch.array(search, states,fuzz);
 // ['New Jersey']
+```
+
+```js
+import jwf from 'jwfsearch';
+
+const documents = [
+  {
+    id:0,
+    color:"Purple"
+  },
+  {
+    id:1,
+    color:"Purple"
+  },
+  {
+    id:2,
+    color:"Purple"
+  },
+  {
+    id:3,
+    color:"Purple"
+  },
+
+
+]
+
+const results = jwf.object("Prple",documents,['color'],0.65);
+
+
 ```
 
 ![image](https://github.com/brandonetter/FuzzySearch-CPP-Addon/assets/4108484/9c7558ad-2ea3-46e1-999c-c8728e8425a6)
