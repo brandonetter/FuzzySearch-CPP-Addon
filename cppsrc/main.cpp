@@ -5,7 +5,20 @@
 #include <map>
 // include cout
 #include <iostream>
+#include <sstream>
+#include <algorithm>
 using namespace std;
+
+
+std::vector<std::string> splitIntoWords(const std::string& str) {
+    std::istringstream iss(str);
+    std::vector<std::string> words;
+    std::string word;
+    while (iss >> word) {
+        words.push_back(word);
+    }
+    return words;
+}
 
 double DjaroWinklerDistance(const std::string& a, const std::string& b) {
     const int m = a.length();
@@ -73,41 +86,62 @@ vector<string> jaroWinklerDistance(const std::string& a, const vector<string>& a
     return result;
 }
 
+double calculateDistanceBetweenWordSets(const std::vector<std::string>& set1, const std::vector<std::string>& set2) {
+    double maxDistance = 0.0;
+
+    // Assume DjaroWinklerDistance is a function you've defined to calculate the Jaro-Winkler distance between two strings.
+    for (const auto& word1 : set1) {
+        for (const auto& word2 : set2) {
+            double distance = DjaroWinklerDistance(word1, word2);
+            maxDistance = std::max(maxDistance, distance);
+        }
+    }
+
+    return maxDistance;
+}
+
+
 // Define a custom type for clarity and ease of use
 typedef std::pair<double, std::string> DistanceAndString;
 typedef std::pair<int, double> IndexAndDistance;
 // The new function
+typedef std::pair<int, double> IndexAndDistance;
+
 std::vector<IndexAndDistance> objectJaroWinklerSearch(
     const std::string& targetString,
     const std::vector<std::map<std::string, std::string>>& dataObjects,
     const std::vector<std::string>& keys,
     double threshold) {
-
     std::vector<IndexAndDistance> results;
 
-    for (int i = 0; i < dataObjects.size(); ++i) {
-        double highestDistance = -1; // Start with an invalid distance
+    for (size_t i = 0; i < dataObjects.size(); ++i) {
+        const auto& dataObject = dataObjects[i];
         for (const auto& key : keys) {
-            auto it = dataObjects[i].find(key);
-            if (it != dataObjects[i].end()) {
-                double distance = DjaroWinklerDistance(targetString, it->second);
-                if (distance >= threshold && distance > highestDistance) {
-                    highestDistance = distance; // Update with the highest distance found
+            auto it = dataObject.find(key);
+            if (it != dataObject.end()) {
+                // Split targetString and dataObject value into words
+                auto targetWords = splitIntoWords(targetString);
+                auto valueWords = splitIntoWords(it->second);
+
+                // Logic to compare words and calculate a "distance" or matching score
+                double distance = calculateDistanceBetweenWordSets(targetWords, valueWords);
+
+                if (distance >= threshold) {
+                    results.emplace_back(i, distance);
+                    break; // Assuming you only need one match per object
                 }
             }
         }
-        if (highestDistance >= 0) { // If a valid distance was found
-            results.push_back(IndexAndDistance(i, highestDistance));
-        }
     }
 
-    // Sort the results by distance in descending order
+    // Sort results based on the distance, highest first
     std::sort(results.begin(), results.end(), [](const IndexAndDistance& a, const IndexAndDistance& b) {
-        return a.second > b.second;
+        return a.second > b.second; // Assuming higher distance means a better match
     });
 
     return results;
 }
+
 // the same as JarowinklerDistanceMethod but for objectJaroWinklerSearch
 Napi::Array JaroWinklerDistanceObjectMethod(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
